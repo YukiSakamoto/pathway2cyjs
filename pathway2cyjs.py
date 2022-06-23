@@ -206,7 +206,7 @@ def global2cyjs(soup):
         g = c.find("graphics")
         data = {}
         data["id"] = c["id"]
-        data["label"] = g["name"]
+        data["description"] = g["name"]
         data["fgcolor"] = g["fgcolor"]
         data["bgcolor"] = g["bgcolor"]
         data["type"] = g["type"]
@@ -283,7 +283,7 @@ def kegg2cyjs(identifier):
         data["keggids"] = e["name"]
         data["keggtype"] = e["type"]
         if e["type"] != "group":
-            data["label"] = g["name"].split(", ")[0]
+            data["description"] = g["name"].split(", ")[0]
             data["name"] = g["name"]
         data["x"] = int(g["x"])
         data["y"] = int(g["y"])
@@ -361,8 +361,10 @@ def escher2cyelements(escher_json_url):
         data["y"] = float(v["y"])
         data["node_type"] = v["node_type"]
         if v["node_type"] == "metabolite":
-            data["bigg_id"] = v["bigg_id"]
-            data["label"] = v["name"]
+            #data["bigg_id"] = v["bigg_id"]
+            data["db"] = "bigg"
+            data["db_id"] = v["bigg_id"]
+            data["description"] = v["name"]
         cynode = {
             "data": data,
             "position": {"x": float(v["x"]), "y": float(v["y"])},
@@ -380,9 +382,12 @@ def escher2cyelements(escher_json_url):
             ed["source"] = segment["from_node_id"]
             ed["target"] = segment["to_node_id"]
             ed["id"] = edge_id
-            ed["reaction_name"] = reaction_name
-            ed["bigg_id"] = bigg_id
-            ed["gene_reaction_rule"] = gene_reaction_rule
+            #ed["reaction_name"] = reaction_name
+            ed["description"] = reaction_name
+            #ed["bigg_id"] = bigg_id
+            ed["db"] = "bigg"
+            ed["db_id"] = bigg_id
+            #ed["gene_reaction_rule"] = gene_reaction_rule  #XXX at present, comment-out.
             cyedge = {"data": ed}
             cyedges.append(cyedge)
 
@@ -415,7 +420,7 @@ def wp2cyelements(identifier):
             data = {}
             data["id"] = wpn["GraphId"]
             nodeids.append(wpn["GraphId"])
-            data["label"] = wpn["TextLabel"]
+            data["description"] = wpn["TextLabel"]
             data["x"] = float(g["CenterX"])
             data["y"] = float(g["CenterY"])
             data["width"] = g["Width"]
@@ -426,7 +431,7 @@ def wp2cyelements(identifier):
             if xref is not None:
                 data["database"] = xref["Database"]
                 data["xrefID"] = xref["ID"]
-                print(data["id"], data["label"], data["database"], data["xrefID"])
+                print(data["id"], data["description"], data["database"], data["xrefID"])
                 data["KEGG"] = bridgedbpy.gpml2kegg(xref["Database"], xref["ID"])
 
         cynode = {
